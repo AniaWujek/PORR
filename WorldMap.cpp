@@ -307,7 +307,7 @@ vector<Town*> WorldMap::adjustPath(vector<Town*> path) {
 }
 
 void WorldMap::changePath(int index, vector<Town*> path) {
-    paths[index].clear();
+    //paths[index].clear();
     paths[index] = path;
 }
 

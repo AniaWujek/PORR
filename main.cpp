@@ -90,6 +90,7 @@ int main() {
 
         //czy jest to punkt lepszy od ostatniego?
         if(worldMap->computePathLength(lepsza) < worldMap->computePathLength(worldMap->GetworstPath())) {
+            #pragma opm critical
             worldMap->changePath(worst, lepsza);
             //wyznacz punkt najlepszy i najgorszy
             best = worldMap->findBestPath();
@@ -102,18 +103,13 @@ int main() {
 
 
         //jesli algorytm utknal ********************************************************
-        if(utknal > 100) {
+        if(utknal > 20) {
             cout<<"utknal! roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
-            /*worldMap->showMap();
-            worldMap->drawPath(odbicie, cv::Scalar(0,0,255),2);
-            worldMap->drawPath(lepsza, cv::Scalar(255,0,0),2);
-            worldMap->drawPath(worldMap->GetbestPath(), cv::Scalar(0,255,0),5);*/
-            cout<<"\nwygrala: ";
-            for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
-            cout<<endl;
-            /*cout<<"\n\nCZAS: "<<(double)(clock() - tStart)/CLOCKS_PER_SEC<<" sekund\n\n";*/
-            /*cv::imshow("mapa", worldMap->worldMap);
-            cv::waitKey();*/
+
+            //cout<<"\nwygrala: ";
+            //for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
+            //cout<<endl;
+
             iii = 10001;
         }
         poprz_dlugosc = worldMap->computePathLength(worldMap->GetworstPath());
@@ -123,16 +119,11 @@ int main() {
         //znaleziono rozwiazanie
         if(worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath()) == 0) {
             cout<<"roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
-            /*worldMap->showMap();
-            worldMap->drawPath(odbicie, cv::Scalar(0,0,255),2);
-            worldMap->drawPath(lepsza, cv::Scalar(255,0,0),2);
-            worldMap->drawPath(worldMap->GetbestPath(), cv::Scalar(0,255,0),5);*/
-            cout<<"\nwygrala: ";
-            for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
-            cout<<endl;
-            /*cout<<"\n\nCZAS: "<<(double)(clock() - tStart)/CLOCKS_PER_SEC<<" sekund\n\n";*/
-            /*cv::imshow("mapa", worldMap->worldMap);
-            cv::waitKey();*/
+
+            //cout<<"\nwygrala: ";
+            //for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
+            //cout<<endl;
+
             iii = 10001;
         }
         //worldMap->drawPath(lepsza, cv::Scalar(255,0,0));
@@ -141,10 +132,14 @@ int main() {
         //cv::waitKey();
     }
 
+    cout<<"\nwygrala: ";
+    for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
+    cout<<endl;
+
 
 
     //cout<<"\n\ncalosc: "<<iteracje<<endl;
-    cout<<"\n\nCZAS: "<<omp_get_wtime() - time<<"sekund\n\n";
+    cout<<"\n\nCZAS: "<<omp_get_wtime() - time<<" sekund\n\n";
 
 
 
