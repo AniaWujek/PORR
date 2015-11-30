@@ -35,6 +35,44 @@ WorldMap::WorldMap()
 	worldMap = m;
 }
 
+string WorldMap::numb2str(int i)
+{
+    stringstream ss;
+    ss << i;
+    string str = ss.str();
+    return str;
+}
+
+WorldMap::WorldMap(int no, double maxX, double maxY)
+{
+    double x;
+    double y;
+	struct drand48_data randBuffer;
+	srand48_r(time(NULL), &randBuffer);
+    for(int i = 0; i < no; ++i) {
+        drand48_r(&randBuffer, &x);
+        y = x*maxY;
+        drand48_r(&randBuffer, &x);
+        x = x*maxX;
+        towns.push_back(new Town((int)x,(int)y,i,numb2str(i)));
+    }
+    for(int i = 0; i < towns.size()-1;++i) {
+        for(int j = i+1; j < towns.size(); ++j) {
+            Road* r = new Road(towns[i],towns[j]);
+            r->computeDistance();
+            roads.push_back(r);
+        }
+
+	}
+	int sizeY = (int)maxY;
+	int sizeX = (int)maxX;
+	this->boxSize = (int)(maxX/10.0);
+	this->rows = sizeY;
+	this->columns = sizeX;
+	cv::Mat m(rows, columns, CV_8UC3, cv::Scalar(255,255,255));
+	worldMap = m;
+}
+
 WorldMap::~WorldMap()
 {
     //dtor
@@ -51,11 +89,9 @@ void WorldMap::printRoads() {
 }
 
 void WorldMap::showMap() {
-	int sizeY = 800;
-	int sizeX = 800;
-	int boxSize = 80;
-	int rows = sizeY;
-	int columns = sizeX;
+
+	int sizeY = rows;
+	int sizeX = columns;
 	cv::Vec3b black = cv::Vec3b(0,0,0);
 
 	for(int i = 1; i < sizeX/boxSize; ++i) {
@@ -73,13 +109,13 @@ void WorldMap::showMap() {
 		cv::circle(this->worldMap, p, 5, cv::Scalar(255,0,0),-1);
 		cv::putText(this->worldMap,towns[i]->Getname(),p,cv::FONT_HERSHEY_SIMPLEX,1,cv::Scalar(255,0,0),2);
 	}
-	for(int i = 0; i < towns.size()-1; ++i) {
+	/*for(int i = 0; i < towns.size()-1; ++i) {
 		for(int j = i+1; j < towns.size(); ++j) {
 			cv::Point p1 = cv::Point(towns[i]->GetX(),towns[i]->GetY());
 			cv::Point p2 = cv::Point(towns[j]->GetX(),towns[j]->GetY());
 			cv::line(this->worldMap, p1, p2, cv::Scalar(0,255,0), 2);
 		}
-	}
+	}*/
 
 
 	//cv::imshow("mapa", this->worldMap);

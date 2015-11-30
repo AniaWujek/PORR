@@ -10,7 +10,7 @@ int main() {
 
 
 
-    WorldMap* worldMap = new WorldMap();
+    WorldMap* worldMap = new WorldMap(10, 1000.0, 1000.0);
 
     //losuj zbior P punktow o licznosci N > 10(n+1), n - wymiar zadania
     worldMap->generateRandomPaths(200,0);
@@ -36,8 +36,10 @@ int main() {
      bool krecsie = true;
      int iii;
     //clock_t tStart = clock();
+
+
     double time = omp_get_wtime();
-    #pragma omp parallel for private(iii, srodek, odbicie, sympleks, lepsza, utknal) num_threads(6) shared(worldMap, best, worst)
+    #pragma omp parallel for private(iii, srodek, odbicie, sympleks, lepsza, utknal) num_threads(20) shared(worldMap, best, worst)
     for(iii = 0; iii < 1000; ++iii) {
         iteracje++;
         //if(iteracje % 100 == 0) cout<<"\niteracja "<<iteracje<<" watek: "<<omp_get_thread_num ();
@@ -103,8 +105,8 @@ int main() {
 
 
         //jesli algorytm utknal ********************************************************
-        if(utknal > 20) {
-            cout<<"utknal! roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
+        if(utknal > 100) {
+            //cout<<"utknal! roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
 
             //cout<<"\nwygrala: ";
             //for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
@@ -118,7 +120,7 @@ int main() {
 
         //znaleziono rozwiazanie
         if(worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath()) == 0) {
-            cout<<"roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
+            //cout<<"roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
 
             //cout<<"\nwygrala: ";
             //for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
@@ -135,15 +137,13 @@ int main() {
     cout<<"\nwygrala: ";
     for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
     cout<<endl;
-
-
-
     //cout<<"\n\ncalosc: "<<iteracje<<endl;
     cout<<"\n\nCZAS: "<<omp_get_wtime() - time<<" sekund\n\n";
 
-
-
-
+    worldMap->showMap();
+    worldMap->drawPath(worldMap->Getpaths()[best], cv::Scalar(0,255,0),5);
+    cv::imshow("mapa", worldMap->worldMap);
+    cv::waitKey();
 
 
 }

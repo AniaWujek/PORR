@@ -16,6 +16,7 @@ class WorldMap
 {
     public:
         WorldMap();
+        WorldMap(int no, double maxX, double maxY);
         virtual ~WorldMap();
         vector<Road*> Getroads() { return roads; }
         void Setroads(vector<Road*> val) { roads = val; }
@@ -49,6 +50,10 @@ class WorldMap
         vector<vector<Town*> > paths;
         vector<Town*> bestPath;
         vector<Town*> worstPath;
+        string numb2str(int i);
+        int rows;
+        int columns;
+        int boxSize;
 };
 
 #endif // WORLDMAP_H
