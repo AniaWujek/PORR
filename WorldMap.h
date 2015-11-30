@@ -8,6 +8,7 @@
 #include <cv.h>
 #include <highgui.h>
 #include <iostream>
+#include <omp.h>
 
 using namespace std;
 

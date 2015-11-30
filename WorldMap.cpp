@@ -177,6 +177,8 @@ void WorldMap::generateRandomPaths(int iterations, int display) {
 
 	vector<Town*> townsPossible;
 	vector<Town*> path;
+	this->paths.clear();
+
 
     for(int iter = 0; iter < iterations; ++iter) {
         townsPossible.clear();
