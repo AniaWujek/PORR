@@ -293,11 +293,11 @@ vector<Town*> WorldMap::adjustPath(vector<Town*> path) {
         int y = path[i]->GetY();
         int best = 0;
         int bestDist = (possible[0]->GetX() - x)*(possible[0]->GetX() - x) + (possible[0]->GetY() - y)*(possible[0]->GetY() - y);
-        for(int i = 1; i < possible.size(); ++i) {
-            int d = (possible[i]->GetX() - x)*(possible[i]->GetX() - x) + (possible[i]->GetY() - y)*(possible[i]->GetY() - y);
+        for(int j = 0; j < possible.size(); ++j) {
+            int d = (possible[j]->GetX() - x)*(possible[j]->GetX() - x) + (possible[j]->GetY() - y)*(possible[j]->GetY() - y);
             if(d < bestDist) {
                 bestDist = d;
-                best = i;
+                best = j;
             }
         }
         newPath.push_back(possible[best]);

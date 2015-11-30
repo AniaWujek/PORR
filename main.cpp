@@ -23,13 +23,13 @@ int main() {
 
     int n = 10;
 
-     vector<Town*> srodek(worldMap->Gettowns().size());
-     vector<Town*> odbicie(worldMap->Gettowns().size());
-     vector<int> sympleks(n+1);
+     vector<Town*> srodek;
+     vector<Town*> odbicie;
+     vector<int> sympleks;
      double x;
      struct drand48_data randBuffer;
      srand48_r(time(NULL), &randBuffer);
-     vector<Town*> lepsza(worldMap->Gettowns().size());
+     vector<Town*> lepsza;
      int utknal = 0;
      int poprz_dlugosc = 0;
      int iteracje = 0;
@@ -41,21 +41,26 @@ int main() {
         iteracje++;
         //if(iteracje % 100 == 0) cout<<"\niteracja "<<iteracje<<" watek: "<<omp_get_thread_num ();
 
+        srodek.clear();
+        odbicie.clear();
+        sympleks.clear();
+        lepsza.clear();
+
 
         //losuj ze zbioru P zbior n punktow i utworz n+1 wymiarowy sympleks
         //pierwszy wierzcholek - najlepszy punkt
         //# pragma omp atomic
-        sympleks[0] = best;
+        sympleks.push_back(best);
         //#pragma omp parallel for shared(worldMap, sympleks) private(x, randBuffer) num_threads(4)
         for(int i = 1; i < n+1; ++i) {
             drand48_r(&randBuffer, &x);
             x = (int)(x*1000.0)%worldMap->Getpaths().size();
-            sympleks[i] = x; //(worldMap->Getpaths())[x]
+            sympleks.push_back(x); //(worldMap->Getpaths())[x]
         }
 
         //wyznacz srodek sympleksu
         //#pragma omp parallel for shared(worldMap, srodek) num_threads(4)
-        for(int i = 0; i < srodek.size();++i) {
+        for(int i = 0; i < worldMap->GetbestPath().size();++i) {
             int xSuma = (worldMap->GetbestPath())[i]->GetX();
             int ySuma = (worldMap->GetbestPath())[i]->GetY();
             for(int j = 1; j < n; ++j) {
@@ -65,7 +70,7 @@ int main() {
             xSuma /= n;
             ySuma /= n;
             //cout<<"\nwatek: "<<omp_get_thread_num ();
-            srodek[i] = new Town(xSuma, ySuma, 7+i, "srodek");
+            srodek.push_back(new Town(xSuma, ySuma, 7+i, "srodek"));
         }
 
         //operacja odbicia ostatniego punktu sympleksu wzgledem srodka sympleksu
@@ -74,7 +79,7 @@ int main() {
             int x = 2*srodek[i]->GetX() - ((worldMap->Getpaths())[sympleks[sympleks.size()-1]])[i]->GetX();
             int y = 2*srodek[i]->GetY() - ((worldMap->Getpaths())[sympleks[sympleks.size()-1]])[i]->GetY();
             Town* t = new Town(x,y,srodek[i]->Getid(),srodek[i]->Getname());
-            odbicie[i] = t;
+            odbicie.push_back(t);
         }
 
         //czy odbicie spelnia ograniczenia?
