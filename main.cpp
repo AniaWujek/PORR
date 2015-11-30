@@ -7,7 +7,7 @@ using namespace std;
 
 int main() {
 
-    clock_t tStart = clock();
+
 
 
     WorldMap* worldMap = new WorldMap();
@@ -35,9 +35,10 @@ int main() {
      int iteracje = 0;
      bool krecsie = true;
      int iii;
-
-    //#pragma omp parallel for private(iii, srodek, odbicie, sympleks, x, randBuffer, lepsza, utknal, poprz_dlugosc, iteracje, krecsie) num_threads(6) shared(worldMap, best, worst)
-    for(iii = 0; iii < 10000; ++iii) {
+    //clock_t tStart = clock();
+    double time = omp_get_wtime();
+    #pragma omp parallel for private(iii, srodek, odbicie, sympleks, lepsza, utknal) num_threads(6) shared(worldMap, best, worst)
+    for(iii = 0; iii < 1000; ++iii) {
         iteracje++;
         //if(iteracje % 100 == 0) cout<<"\niteracja "<<iteracje<<" watek: "<<omp_get_thread_num ();
 
@@ -60,9 +61,10 @@ int main() {
 
         //wyznacz srodek sympleksu
         //#pragma omp parallel for shared(worldMap, srodek) num_threads(4)
-        for(int i = 0; i < worldMap->GetbestPath().size();++i) {
-            int xSuma = (worldMap->GetbestPath())[i]->GetX();
-            int ySuma = (worldMap->GetbestPath())[i]->GetY();
+        vector<Town*> currentBestPath = worldMap->GetbestPath();
+        for(int i = 0; i < currentBestPath.size();++i) {
+            int xSuma = (currentBestPath)[i]->GetX();
+            int ySuma = (currentBestPath)[i]->GetY();
             for(int j = 1; j < n; ++j) {
                 xSuma += (worldMap->Getpaths())[sympleks[j]][i]->GetX();
                 ySuma += (worldMap->Getpaths())[sympleks[j]][i]->GetY();
@@ -102,16 +104,16 @@ int main() {
         //jesli algorytm utknal ********************************************************
         if(utknal > 100) {
             cout<<"utknal! roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
-            worldMap->showMap();
+            /*worldMap->showMap();
             worldMap->drawPath(odbicie, cv::Scalar(0,0,255),2);
             worldMap->drawPath(lepsza, cv::Scalar(255,0,0),2);
-            worldMap->drawPath(worldMap->GetbestPath(), cv::Scalar(0,255,0),5);
+            worldMap->drawPath(worldMap->GetbestPath(), cv::Scalar(0,255,0),5);*/
             cout<<"\nwygrala: ";
             for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
             cout<<endl;
-            cout<<"\n\nCZAS: "<<(double)(clock() - tStart)/CLOCKS_PER_SEC<<" sekund\n\n";
-            cv::imshow("mapa", worldMap->worldMap);
-            cv::waitKey();
+            /*cout<<"\n\nCZAS: "<<(double)(clock() - tStart)/CLOCKS_PER_SEC<<" sekund\n\n";*/
+            /*cv::imshow("mapa", worldMap->worldMap);
+            cv::waitKey();*/
             iii = 10001;
         }
         poprz_dlugosc = worldMap->computePathLength(worldMap->GetworstPath());
@@ -121,16 +123,16 @@ int main() {
         //znaleziono rozwiazanie
         if(worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath()) == 0) {
             cout<<"roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
-            worldMap->showMap();
+            /*worldMap->showMap();
             worldMap->drawPath(odbicie, cv::Scalar(0,0,255),2);
             worldMap->drawPath(lepsza, cv::Scalar(255,0,0),2);
-            worldMap->drawPath(worldMap->GetbestPath(), cv::Scalar(0,255,0),5);
+            worldMap->drawPath(worldMap->GetbestPath(), cv::Scalar(0,255,0),5);*/
             cout<<"\nwygrala: ";
             for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
             cout<<endl;
-            cout<<"\n\nCZAS: "<<(double)(clock() - tStart)/CLOCKS_PER_SEC<<" sekund\n\n";
-            cv::imshow("mapa", worldMap->worldMap);
-            cv::waitKey();
+            /*cout<<"\n\nCZAS: "<<(double)(clock() - tStart)/CLOCKS_PER_SEC<<" sekund\n\n";*/
+            /*cv::imshow("mapa", worldMap->worldMap);
+            cv::waitKey();*/
             iii = 10001;
         }
         //worldMap->drawPath(lepsza, cv::Scalar(255,0,0));
@@ -142,6 +144,7 @@ int main() {
 
 
     //cout<<"\n\ncalosc: "<<iteracje<<endl;
+    cout<<"\n\nCZAS: "<<omp_get_wtime() - time<<"sekund\n\n";
 
 
 
