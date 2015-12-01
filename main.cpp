@@ -25,6 +25,7 @@ int main() {
 
      vector<Town*> srodek;
      vector<Town*> odbicie;
+     vector<Town*> ekspansja;
      vector<int> sympleks;
      double x;
      struct drand48_data randBuffer;
@@ -39,8 +40,8 @@ int main() {
 
 
     double time = omp_get_wtime();
-    #pragma omp parallel for private(iii, srodek, odbicie, sympleks, lepsza, utknal) num_threads(20) shared(worldMap, best, worst)
-    for(iii = 0; iii < 1000; ++iii) {
+    #pragma omp parallel for private(iii, srodek, odbicie, sympleks, lepsza, utknal) num_threads(6) shared(worldMap, best, worst)
+    for(iii = 0; iii < 100000; ++iii) {
         iteracje++;
         //if(iteracje % 100 == 0) cout<<"\niteracja "<<iteracje<<" watek: "<<omp_get_thread_num ();
 
@@ -48,6 +49,7 @@ int main() {
         odbicie.clear();
         sympleks.clear();
         lepsza.clear();
+        ekspansja.clear();
 
 
         //losuj ze zbioru P zbior n punktow i utworz n+1 wymiarowy sympleks
@@ -86,6 +88,12 @@ int main() {
             odbicie.push_back(t);
         }
 
+        /*if(iii%10 == 0) {
+            for(int i = 0; i < odbicie.size(); ++i) {
+                int x = 1.5 * odbicie[i]->GetX() + (1 - 1.5)*worldMap->GetbestPath()
+            }
+        }*/
+
         //czy odbicie spelnia ograniczenia?
         //zaadaptowanie wyliczonej sciezki do istniejacych miast
         lepsza = worldMap->adjustPath(odbicie);
@@ -105,28 +113,28 @@ int main() {
 
 
         //jesli algorytm utknal ********************************************************
-        if(utknal > 100) {
-            //cout<<"utknal! roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
+        if(utknal > 1000) {
+            cout<<"utknal! roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
 
             //cout<<"\nwygrala: ";
             //for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
             //cout<<endl;
 
-            iii = 10001;
+            iii = 100001;
         }
         poprz_dlugosc = worldMap->computePathLength(worldMap->GetworstPath());
         //jesli algorytm utknal ********************************************************
 
 
         //znaleziono rozwiazanie
-        if(worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath()) == 0) {
-            //cout<<"roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
+        if(worldMap->computePathLength(worldMap->Getpaths()[worst]) - worldMap->computePathLength(worldMap->Getpaths()[best]) == 0) {
+            cout<<"roznica: "<<worldMap->computePathLength(worldMap->GetworstPath()) - worldMap->computePathLength(worldMap->GetbestPath())<<endl;
 
             //cout<<"\nwygrala: ";
             //for(int i = 0; i < worldMap->Getpaths()[best].size(); ++i) cout<< worldMap->Getpaths()[best][i]->Getname()<<" ";
             //cout<<endl;
 
-            iii = 10001;
+            iii = 100001;
         }
         //worldMap->drawPath(lepsza, cv::Scalar(255,0,0));
         //cv::imshow("mapa", worldMap->worldMap);
